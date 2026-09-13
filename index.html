@@ -8,116 +8,171 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --primary: #0052A3;
-            --primary-light: #E6F0FF;
-            --success: #22C55E;
-            --text-dark: #1F2937;
-            --text-light: #6B7280;
-            --border: #E5E7EB;
-            --bg-white: #FFFFFF;
-            --bg-gray: #F9FAFB;
-        }
+        :root { --primary: #0052A3; --primary-light: #E6F0FF; --success: #22C55E; --text-dark: #1F2937; --text-light: #6B7280; --border: #E5E7EB; --bg-white: #FFFFFF; --bg-gray: #F9FAFB; }
         body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg-gray); color: var(--text-dark); padding: 16px; }
         .container { max-width: 900px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 40px; }
-        header h1 { color: var(--primary); font-size: 32px; margin-bottom: 8px; }
+        
+        header { display: flex; align-items: center; gap: 20px; margin-bottom: 40px; }
+        .logo { width: 60px; height: 60px; }
+        .logo img { width: 100%; height: 100%; }
+        header .titulo { flex: 1; }
+        header h1 { color: var(--primary); font-size: 28px; margin-bottom: 4px; }
+        header p { color: var(--text-light); font-size: 14px; }
+        
+        .admin-badge { background: #FEE2E2; color: #991B1B; padding: 8px 16px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+        .logout-btn { background: #EF4444; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        
         .tabs { display: flex; gap: 0; margin-bottom: 32px; border-bottom: 2px solid var(--border); }
         .tab-btn { flex: 1; padding: 12px; border: none; background: none; cursor: pointer; color: var(--text-light); font-weight: 600; border-bottom: 3px solid transparent; margin-bottom: -2px; }
         .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        
         .tab-content { display: none; padding: 20px; }
         .tab-content.active { display: block; }
+        
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 600; }
         .form-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; }
+        
         .btn { padding: 12px 24px; border: none; cursor: pointer; font-weight: 600; border-radius: 4px; width: 100%; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-secondary { background: var(--text-light); color: white; }
+        .btn-danger { background: #EF4444; color: white; }
+        
         .message { margin-bottom: 16px; padding: 12px; border-radius: 4px; }
         .message.success { background: #E6F9E6; color: #22C55E; }
         .message.error { background: #FFE6E6; color: #991B1B; }
+        
         .participants-list { max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 16px; }
         .participant-item { padding: 12px; border-bottom: 1px solid var(--border); }
-        .stat-box { background: var(--primary-light); padding: 20px; border-radius: 8px; text-align: center; }
+        .participant-item:last-child { border-bottom: none; }
+        
+        .stat-box { background: var(--primary-light); padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
         .stat-number { font-size: 32px; font-weight: 700; color: var(--primary); }
+        
         .empty-state { text-align: center; padding: 40px 20px; color: var(--text-light); }
+        
+        .login-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .login-box { background: white; padding: 40px; border-radius: 8px; max-width: 400px; width: 90%; }
+        .login-box h2 { margin-bottom: 20px; color: var(--primary); }
+        .login-box input { width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid var(--border); border-radius: 4px; font-size: 16px; }
+        .login-box .btn { margin-bottom: 12px; }
+        .login-box .voltar { background: #E5E7EB; color: var(--text-dark); }
+        
+        .winner-card { background: #E6F9E6; border: 2px solid #22C55E; padding: 20px; margin: 16px 0; border-radius: 8px; }
+        .winner-position { color: #22C55E; font-weight: bold; margin-bottom: 8px; font-size: 12px; }
+        .winner-name { font-size: 24px; font-weight: bold; margin-bottom: 8px; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🎲 Sorteio de Brindes</h1>
-            <p>Seguro Fiança Locatícia - Porto Seguro</p>
+            <div class="logo">
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="200" height="200" rx="40" fill="#0052A3"/>
+                    <circle cx="100" cy="100" r="45" fill="none" stroke="white" stroke-width="12"/>
+                    <circle cx="100" cy="100" r="25" fill="white"/>
+                    <text x="100" y="180" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#0052A3" text-anchor="middle">QUADRATA</text>
+                    <text x="100" y="200" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0052A3" text-anchor="middle">SEGUROS</text>
+                </svg>
+            </div>
+            <div class="titulo">
+                <h1>Sorteio de Brindes</h1>
+                <p>Seguro Fiança Locatícia - Porto Seguro</p>
+            </div>
+            <div id="adminStatus" style="display:none;">
+                <span class="admin-badge">🔐 ADMIN ATIVO</span><br><br>
+                <button class="logout-btn" onclick="fazerLogout()">Sair</button>
+            </div>
         </header>
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="abrirAba('participar')">Participar</button>
-            <button class="tab-btn" onclick="abrirAba('sorteio')">Sorteio</button>
-            <button class="tab-btn" onclick="abrirAba('ganhadores')">Ganhadores</button>
-            <button class="tab-btn" onclick="abrirAba('qrcode')">QR Code</button>
+        <!-- CONVIDADO MODE -->
+        <div id="convidadoMode">
+            <div id="participar">
+                <div id="message"></div>
+                <form onsubmit="salvarParticipante(event)">
+                    <div class="form-group">
+                        <label>Nome Completo</label>
+                        <input type="text" id="nome" required placeholder="Seu nome">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email" required placeholder="seu@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>WhatsApp/Telefone</label>
+                        <input type="tel" id="telefone" required placeholder="(11) 99999-9999">
+                    </div>
+                    <div class="form-group">
+                        <label>Empresa (opcional)</label>
+                        <input type="text" id="empresa" placeholder="Seu negócio">
+                    </div>
+                    <button type="submit" class="btn btn-primary">✅ Participar do Sorteio</button>
+                </form>
+                
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid var(--border);">
+                
+                <h3 style="margin-bottom: 16px;">Seu Registro</h3>
+                <div id="meuRegistro" class="empty-state">
+                    <p>Preencha o formulário acima para participar!</p>
+                </div>
+            </div>
         </div>
 
-        <!-- PARTICIPAR -->
-        <div id="participar" class="tab-content active">
-            <div id="message"></div>
-            <form onsubmit="salvarParticipante(event)">
-                <div class="form-group">
-                    <label>Nome Completo</label>
-                    <input type="text" id="nome" required placeholder="Seu nome">
+        <!-- ADMIN MODE -->
+        <div id="adminMode" style="display:none;">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="abrirAbaAdmin('lista')">Participantes</button>
+                <button class="tab-btn" onclick="abrirAbaAdmin('sorteio')">Sorteio</button>
+                <button class="tab-btn" onclick="abrirAbaAdmin('ganhadores')">Ganhadores</button>
+                <button class="tab-btn" onclick="abrirAbaAdmin('qrcode')">QR Code</button>
+            </div>
+
+            <div id="lista" class="tab-content active">
+                <div class="stat-box">
+                    <div class="stat-number" id="totalParticipantes">0</div>
+                    <div>Participantes Registrados</div>
                 </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="email" required placeholder="seu@email.com">
+                <div class="participants-list" id="listaParticipantes">
+                    <div class="empty-state">Nenhum participante ainda.</div>
                 </div>
-                <div class="form-group">
-                    <label>WhatsApp/Telefone</label>
-                    <input type="tel" id="telefone" required placeholder="(11) 99999-9999">
+                <br>
+                <button class="btn btn-secondary" onclick="limparTodos()">🗑️ Limpar Todos (Reiniciar)</button>
+            </div>
+
+            <div id="sorteio" class="tab-content">
+                <p style="margin-bottom: 20px;">Clique para sortear 5 ganhadores dentre todos os participantes:</p>
+                <button class="btn btn-primary" onclick="realizarSorteio()" style="font-size: 18px; padding: 20px;">🎲 SORTEAR AGORA</button>
+            </div>
+
+            <div id="ganhadores" class="tab-content">
+                <div id="winnersDisplay" class="empty-state">
+                    <p>Sorteio ainda não realizado.</p>
                 </div>
-                <div class="form-group">
-                    <label>Empresa (opcional)</label>
-                    <input type="text" id="empresa" placeholder="Seu negócio">
+            </div>
+
+            <div id="qrcode" class="tab-content">
+                <div style="text-align: center;">
+                    <p style="margin-bottom: 20px;">QR Code para convidados participarem:</p>
+                    <div id="qrCode" style="margin: 20px 0;"></div>
+                    <button class="btn btn-primary" onclick="baixarQRCode()">📥 Baixar QR Code</button>
                 </div>
-                <button type="submit" class="btn btn-primary">✅ Participar do Sorteio</button>
-            </form>
+            </div>
         </div>
 
-        <!-- SORTEIO -->
-        <div id="sorteio" class="tab-content">
-            <div class="stat-box">
-                <div class="stat-number" id="totalParticipantes">0</div>
-                <div>Participantes</div>
-            </div><br>
-            <div class="participants-list" id="listaParticipantes">
-                <div class="empty-state">Nenhum participante ainda.</div>
-            </div><br>
-            <button class="btn btn-primary" onclick="realizarSorteio()">🎲 SORTEAR AGORA</button>
-        </div>
-
-        <!-- GANHADORES -->
-        <div id="ganhadores" class="tab-content">
-            <div id="winnersDisplay"></div>
-        </div>
-
-        <!-- QR CODE -->
-        <div id="qrcode" class="tab-content">
-            <div style="text-align: center;">
-                <p>Escaneie para participar:</p>
-                <div id="qrCode" style="margin: 20px 0;"></div>
-                <button class="btn btn-primary" onclick="baixarQRCode()">📥 Baixar QR Code</button>
+        <!-- LOGIN MODAL -->
+        <div id="loginModal" class="login-modal" style="display:none;">
+            <div class="login-box">
+                <h2>🔐 Acesso Admin</h2>
+                <input type="password" id="senhaInput" placeholder="Digite a senha" onkeypress="if(event.key==='Enter') verificarSenha()">
+                <button class="btn btn-primary" onclick="verificarSenha()">Entrar</button>
+                <button class="btn voltar" onclick="fecharLoginModal()">Voltar</button>
             </div>
         </div>
     </div>
 
     <script>
-        function abrirAba(nome) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(nome).classList.add('active');
-            event.target.classList.add('active');
-            
-            if (nome === 'sorteio') atualizarLista();
-            if (nome === 'qrcode' && !document.querySelector('#qrCode canvas')) gerarQRCode();
-        }
+        const SENHA_ADMIN = "2734";
+        let isAdmin = false;
 
         function salvarParticipante(e) {
             e.preventDefault();
@@ -127,28 +182,63 @@
                 const telefone = document.getElementById('telefone').value.trim();
                 const empresa = document.getElementById('empresa').value.trim();
 
+                const participante = {nome, email, telefone, empresa, data: new Date().toLocaleString()};
+                
                 let participantes = [];
                 try {
                     const dados = localStorage.getItem('participantes');
                     participantes = dados ? JSON.parse(dados) : [];
                 } catch(err) {
-                    console.error('Erro ao ler localStorage:', err);
                     participantes = [];
                 }
 
-                participantes.push({nome, email, telefone, empresa});
+                participantes.push(participante);
                 localStorage.setItem('participantes', JSON.stringify(participantes));
 
                 mostrarMensagem('✅ Você está no sorteio! Boa sorte!', 'success');
                 document.querySelector('form').reset();
-                atualizarLista();
+                atualizarMeuRegistro();
             } catch(err) {
                 console.error('Erro:', err);
                 mostrarMensagem('❌ Erro ao participar!', 'error');
             }
         }
 
-        function atualizarLista() {
+        function atualizarMeuRegistro() {
+            try {
+                const dados = localStorage.getItem('participantes');
+                const participantes = dados ? JSON.parse(dados) : [];
+                
+                if (participantes.length === 0) {
+                    document.getElementById('meuRegistro').innerHTML = '<div class="empty-state"><p>Preencha o formulário para participar!</p></div>';
+                    return;
+                }
+
+                const ultimo = participantes[participantes.length - 1];
+                document.getElementById('meuRegistro').innerHTML = `
+                    <div style="background: #E6F0FF; padding: 20px; border-radius: 8px; text-align: left;">
+                        <strong>${ultimo.nome}</strong><br>
+                        ${ultimo.email}<br>
+                        ${ultimo.telefone}<br>
+                        ${ultimo.empresa ? '<br>' + ultimo.empresa : ''}
+                    </div>
+                `;
+            } catch(err) {
+                console.error('Erro:', err);
+            }
+        }
+
+        function abrirAbaAdmin(nome) {
+            document.querySelectorAll('#adminMode .tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('#adminMode .tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(nome).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (nome === 'lista') atualizarListaAdmin();
+            if (nome === 'qrcode' && !document.querySelector('#qrCode canvas')) gerarQRCode();
+        }
+
+        function atualizarListaAdmin() {
             try {
                 const dados = localStorage.getItem('participantes');
                 const participantes = dados ? JSON.parse(dados) : [];
@@ -162,12 +252,14 @@
                 const html = participantes.map((p, i) => `
                     <div class="participant-item">
                         <strong>${i+1}. ${p.nome}</strong><br>
-                        ${p.email} • ${p.telefone}
+                        📧 ${p.email}<br>
+                        📱 ${p.telefone}
+                        ${p.empresa ? '<br>🏢 ' + p.empresa : ''}
                     </div>
                 `).join('');
                 document.getElementById('listaParticipantes').innerHTML = html;
             } catch(err) {
-                console.error('Erro ao listar:', err);
+                console.error('Erro:', err);
             }
         }
 
@@ -177,7 +269,7 @@
                 const participantes = dados ? JSON.parse(dados) : [];
 
                 if (participantes.length < 5) {
-                    alert('Precisa de pelo menos 5 participantes!');
+                    alert('Precisa de pelo menos 5 participantes! Agora temos: ' + participantes.length);
                     return;
                 }
 
@@ -186,6 +278,7 @@
 
                 localStorage.setItem('ganhadores', JSON.stringify(ganhadores));
                 mostrarGanhadores(ganhadores);
+                confetti();
             } catch(err) {
                 console.error('Erro no sorteio:', err);
                 alert('Erro ao realizar sorteio!');
@@ -195,31 +288,31 @@
         function mostrarGanhadores(ganhadores) {
             const posicoes = ['🥇 1º LUGAR', '🥈 2º LUGAR', '🥉 3º LUGAR', '4º LUGAR', '5º LUGAR'];
             const html = ganhadores.map((g, i) => `
-                <div style="background: #E6F9E6; border: 2px solid #22C55E; padding: 20px; margin: 16px 0; border-radius: 8px;">
-                    <div style="color: #22C55E; font-weight: bold; margin-bottom: 8px;">${posicoes[i]}</div>
-                    <div style="font-size: 24px; font-weight: bold; margin-bottom: 8px;">${g.nome}</div>
-                    <div>${g.email}</div>
-                    <div>${g.telefone}</div>
+                <div class="winner-card">
+                    <div class="winner-position">${posicoes[i]}</div>
+                    <div class="winner-name">${g.nome}</div>
+                    <div>📧 ${g.email}</div>
+                    <div>📱 ${g.telefone}</div>
                 </div>
             `).join('');
 
-            document.getElementById('winnersDisplay').innerHTML = html + '<br><button class="btn btn-secondary" onclick="limparSorteio()">Novo Sorteio</button>';
-            document.querySelectorAll('.tab-btn')[2].click();
-            confetti();
+            document.getElementById('winnersDisplay').innerHTML = html + '<br><button class="btn btn-secondary" onclick="novoSorteio()">🔄 Novo Sorteio</button>';
+            document.querySelectorAll('#adminMode .tab-btn')[2].click();
         }
 
-        function limparSorteio() {
+        function novoSorteio() {
             localStorage.removeItem('ganhadores');
-            document.getElementById('winnersDisplay').innerHTML = '';
-            abrirAba('sorteio');
+            document.getElementById('winnersDisplay').innerHTML = '<div class="empty-state"><p>Sorteio ainda não realizado.</p></div>';
+            document.querySelectorAll('#adminMode .tab-btn')[1].click();
         }
 
         function gerarQRCode() {
             try {
+                const url = window.location.href.split('?')[0];
                 const qr = document.getElementById('qrCode');
                 qr.innerHTML = '';
                 new QRCode(qr, {
-                    text: window.location.href,
+                    text: url,
                     width: 256,
                     height: 256,
                     colorDark: '#0052A3',
@@ -251,6 +344,7 @@
                     el.style.top = '-50px';
                     el.style.fontSize = '24px';
                     el.style.pointerEvents = 'none';
+                    el.style.zIndex = '999';
                     document.body.appendChild(el);
 
                     let top = -50;
@@ -270,7 +364,59 @@
             setTimeout(() => el.className = 'message', 3000);
         }
 
-        atualizarLista();
+        // Admin Functions
+        function abrirLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('senhaInput').focus();
+        }
+
+        function fecharLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('senhaInput').value = '';
+        }
+
+        function verificarSenha() {
+            const senha = document.getElementById('senhaInput').value;
+            if (senha === SENHA_ADMIN) {
+                isAdmin = true;
+                document.getElementById('convidadoMode').style.display = 'none';
+                document.getElementById('adminMode').style.display = 'block';
+                document.getElementById('adminStatus').style.display = 'block';
+                fecharLoginModal();
+                atualizarListaAdmin();
+            } else {
+                alert('Senha incorreta!');
+                document.getElementById('senhaInput').value = '';
+                document.getElementById('senhaInput').focus();
+            }
+        }
+
+        function fazerLogout() {
+            if (confirm('Tem certeza que quer sair do modo admin?')) {
+                isAdmin = false;
+                document.getElementById('convidadoMode').style.display = 'block';
+                document.getElementById('adminMode').style.display = 'none';
+                document.getElementById('adminStatus').style.display = 'none';
+            }
+        }
+
+        function limparTodos() {
+            if (confirm('⚠️ ATENÇÃO! Isso vai APAGAR TODOS os participantes e ganhadores. Tem certeza?')) {
+                if (confirm('CONFIRMAÇÃO FINAL: Vai apagar tudo mesmo?')) {
+                    localStorage.removeItem('participantes');
+                    localStorage.removeItem('ganhadores');
+                    atualizarListaAdmin();
+                    alert('✅ Dados apagados!');
+                }
+            }
+        }
+
+        // Verificar se é admin ao carregar
+        if (window.location.search.includes('admin')) {
+            abrirLoginModal();
+        }
+
+        atualizarMeuRegistro();
     </script>
 </body>
 </html>
