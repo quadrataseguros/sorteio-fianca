@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteio Seguro Fiança Porto</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0052A3;
+            --primary-light: #E6F0FF;
+            --success: #22C55E;
+            --success-light: #E6F9E6;
+            --warning: #F59E0B;
+            --text-dark: #1F2937;
+            --text-light: #6B7280;
+            --border: #E5E7EB;
+            --bg-white: #FFFFFF;
+            --bg-gray: #F9FAFB;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --text-dark: #F3F4F6;
+                --text-light: #D1D5DB;
+                --border: #374151;
+                --bg-white: #1F2937;
+                --bg-gray: #111827;
+            }
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-gray);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 20px;
+        }
+
+        header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            font-size: 16px;
+            color: var(--text-light);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 32px;
+            border-bottom: 2px solid var(--border);
+            padding: 0 0 16px 0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -16px;
+            transition: all 200ms ease;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-btn:hover {
+            color: var(--text-dark);
+        }
+
+        .tab-content {
+            display: none;
+            background: var(--bg-white);
+            padding: 32px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-white);
+            color: var(--text-dark);
+            transition: border 200ms ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 200ms ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: #003D7A;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 82, 163, 0.2);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--warning);
+            color: white;
+            width: 100%;
+            font-size: 18px;
+            padding: 16px;
+        }
+
+        .btn-secondary:hover {
+            background: #D97706;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.success {
+            background: var(--success-light);
+            color: #15803D;
+            display: block;
+        }
+
+        .message.error {
+            background: #FEE2E2;
+            color: #991B1B;
+            display: block;
+        }
+
+        .participants-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+        }
+
+        .participant-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .participant-item:last-child {
+            border-bottom: none;
+        }
+
+        .participant-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .participant-info {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state p {
+            font-size: 16px;
+        }
+
+        .winners-grid {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .winner-card {
+            background: var(--success-light);
+            border: 2px solid var(--success);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .winner-position {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--success);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .winner-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .winner-contact {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .qr-container {
+            text-align: center;
+            padding: 24px;
+            background: var(--bg-white);
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        #qrCode {
+            display: inline-block;
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .qr-label {
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            background: var(--primary-light);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            font-size: 24px;
+        }
+
+        @media (max-width: 640px) {
+            header h1 {
+                font-size: 24px;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                gap: 8px;
+            }
+
+            .tab-btn {
+                font-size: 13px;
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sorteio de Brindes</h1>
+            <p>Seguro Fiança Locatícia Porto Seguro</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="participar">Participar</button>
+            <button class="tab-btn" data-tab="sorteio">Sorteio</button>
+            <button class="tab-btn" data-tab="ganhadores">Ganhadores</button>
+            <button class="tab-btn" data-tab="qrcode">QR Code</button>
+        </div>
+
+        <!-- TAB 1: PARTICIPAR -->
+        <div id="participar" class="tab-content active">
+            <div class="message" id="message"></div>
+
+            <form id="formParticipacao">
+                <div class="form-group">
+                    <label for="nome">Nome Completo *</label>
+                    <input type="text" id="nome" name="nome" required placeholder="Seu nome">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required placeholder="seu@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="telefone">WhatsApp/Telefone *</label>
+                    <input type="tel" id="telefone" name="telefone" required placeholder="(11) 99999-9999">
+                </div>
+
+                <div class="form-group">
+                    <label for="empresa">Empresa/Imobiliária (opcional)</label>
+                    <input type="text" id="empresa" name="empresa" placeholder="Seu negócio">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Participar do Sorteio</button>
+            </form>
+        </div>
+
+        <!-- TAB 2: SORTEIO -->
+        <div id="sorteio" class="tab-content">
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number" id="totalParticipantes">0</div>
+                    <div class="stat-label">Participantes</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Ganhadores</div>
+                </div>
+            </div>
+
+            <div class="participants-list" id="listaParticipantes">
+                <div class="empty-state">
+                    <p>Nenhum participante ainda.</p>
+                </div>
+            </div>
+
+            <br>
+
+            <button id="btnSortear" class="btn btn-secondary" onclick="realizarSorteio()">🎲 SORTEAR AGORA</button>
+        </div>
+
+        <!-- TAB 3: GANHADORES -->
+        <div id="ganhadores" class="tab-content">
+            <div class="empty-state" id="ganhadorVazio">
+                <p>Sorteio ainda não realizado.</p>
+            </div>
+            <div id="ganhadorConteudo" style="display: none;">
+                <div class="winners-grid" id="winnersGrid"></div>
+                <button class="btn btn-primary" onclick="limparSorteio()">Novo Sorteio</button>
+            </div>
+        </div>
+
+        <!-- TAB 4: QR CODE -->
+        <div id="qrcode" class="tab-content">
+            <div class="qr-container">
+                <p style="margin-bottom: 20px; color: var(--text-light);">Escaneie para participar do sorteio</p>
+                <div id="qrCode"></div>
+                <div class="qr-label">Use este QR code na apresentação</div>
+            </div>
+            <button class="btn btn-primary" onclick="baixarQRCode()">📥 Baixar QR Code</button>
+        </div>
+    </div>
+
+    <script>
+        // Tabs
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                btn.classList.add('active');
+                const tabName = btn.getAttribute('data-tab');
+                document.getElementById(tabName).classList.add('active');
+
+                if (tabName === 'qrcode' && !document.querySelector('#qrCode canvas')) {
+                    gerarQRCode();
+                }
+            });
+        });
+
+        // Formulário
+        document.getElementById('formParticipacao').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const nome = document.getElementById('nome').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const telefone = document.getElementById('telefone').value.trim();
+            const empresa = document.getElementById('empresa').value.trim();
+
+            if (!nome || !email || !telefone) {
+                mostrarMensagem('Preencha todos os campos obrigatórios!', 'error');
+                return;
+            }
+
+            const participante = { nome, email, telefone, empresa };
+            let participantes = JSON.parse(localStorage.getItem('participantes')) || [];
+
+            participantes.push(participante);
+            localStorage.setItem('participantes', JSON.stringify(participantes));
+
+            mostrarMensagem('✅ Você está no sorteio! Boa sorte!', 'success');
+            document.getElementById('formParticipacao').reset();
+
+            atualizarLista();
+        });
+
+        // Mostrar mensagem
+        function mostrarMensagem(msg, tipo) {
+            const msgEl = document.getElementById('message');
+            msgEl.textContent = msg;
+            msgEl.className = 'message ' + tipo;
+            setTimeout(() => msgEl.className = 'message', 3000);
+        }
+
+        // Atualizar lista
+        function atualizarLista() {
+            const participantes = JSON.parse(localStorage.getItem('participantes')) || [];
+            const lista = document.getElementById('listaParticipantes');
+            const total = document.getElementById('totalParticipantes');
+
+            total.textContent = participantes.length;
+
+            if (participantes.length === 0) {
+                lista.innerHTML = '<div class="empty-state"><p>Nenhum participante ainda.</p></div>';
+                document.getElementById('btnSortear').disabled = true;
+                return;
+            }
+
+            document.getElementById('btnSortear').disabled = participantes.length < 5;
+
+            lista.innerHTML = participantes.map((p, idx) => `
+                <div class="participant-item">
+                    <div class="participant-name">${idx + 1}. ${p.nome}</div>
+                    <div class="participant-info">${p.email} • ${p.telefone}</div>
+                </div>
+            `).join('');
+        }
+
+        // Sortear
+        function realizarSorteio() {
+            const participantes = JSON.parse(localStorage.getItem('participantes')) || [];
+
+            if (participantes.length < 5) {
+                alert('Precisa de pelo menos 5 participantes!');
+                return;
+            }
+
+            const shuffled = [...participantes].sort(() => Math.random() - 0.5);
+            const ganhadores = shuffled.slice(0, 5);
+
+            localStorage.setItem('ganhadores', JSON.stringify(ganhadores));
+
+            mostrarGanhadores(ganhadores);
+            confetti();
+        }
+
+        // Mostrar ganhadores
+        function mostrarGanhadores(ganhadores) {
+            const winnersGrid = document.getElementById('winnersGrid');
+            const ganhadorVazio = document.getElementById('ganhadorVazio');
+            const ganhadorConteudo = document.getElementById('ganhadorConteudo');
+
+            const posicoes = ['🥇 1º LUGAR', '🥈 2º LUGAR', '🥉 3º LUGAR', '4º LUGAR', '5º LUGAR'];
+
+            winnersGrid.innerHTML = ganhadores.map((g, idx) => `
+                <div class="winner-card">
+                    <div class="winner-position">${posicoes[idx]}</div>
+                    <div class="winner-name">${g.nome}</div>
+                    <div class="winner-contact">${g.email}</div>
+                    <div class="winner-contact">${g.telefone}</div>
+                </div>
+            `).join('');
+
+            ganhadorVazio.style.display = 'none';
+            ganhadorConteudo.style.display = 'block';
+
+            document.querySelectorAll('.tab-btn')[2].click();
+        }
+
+        // Limpar sorteio
+        function limparSorteio() {
+            localStorage.removeItem('ganhadores');
+            document.getElementById('ganhadorVazio').style.display = 'block';
+            document.getElementById('ganhadorConteudo').style.display = 'none';
+            document.querySelectorAll('.tab-btn')[1].click();
+        }
+
+        // QR Code
+        function gerarQRCode() {
+            const url = window.location.href;
+            const qrContainer = document.getElementById('qrCode');
+            qrContainer.innerHTML = '';
+            new QRCode(qrContainer, {
+                text: url,
+                width: 256,
+                height: 256,
+                colorDark: '#0052A3',
+                colorLight: '#FFFFFF',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        function baixarQRCode() {
+            const canvas = document.querySelector('#qrCode canvas');
+            if (!canvas) {
+                alert('QR Code ainda não foi gerado.');
+                return;
+            }
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL();
+            link.download = 'sorteio-fianca.png';
+            link.click();
+        }
+
+        // Confetti
+        function confetti() {
+            const emojis = ['🎉', '🎊', '🎁', '🏆', '⭐'];
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const conf = document.createElement('div');
+                    conf.className = 'confetti';
+                    conf.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    conf.style.left = Math.random() * 100 + '%';
+                    conf.style.top = '-50px';
+                    conf.style.opacity = '1';
+                    document.body.appendChild(conf);
+
+                    let top = -50;
+                    const interval = setInterval(() => {
+                        top += Math.random() * 5 + 3;
+                        conf.style.top = top + 'px';
+                        conf.style.opacity = 1 - (top / window.innerHeight);
+                        if (top > window.innerHeight) {
+                            clearInterval(interval);
+                            conf.remove();
+                        }
+                    }, 20);
+                }, i * 30);
+            }
+        }
+
+        // Inicializar
+        atualizarLista();
+    </script>
+</body>
+</html>
