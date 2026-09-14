@@ -79,11 +79,21 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            min-width: 400px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #qrCode canvas {
+            width: 300px !important;
+            height: 300px !important;
         }
 
         /* Slide Logo QUADRATA */
         .slide-logo {
-            background: linear-gradient(135deg, #ffffff 0%, #F9FAFB 100%);
+            background: linear-gradient(135deg, #F9FAFB 0%, #E6F0FF 100%);
             gap: 30px;
         }
 
@@ -216,8 +226,7 @@
         <!-- Slide 3: Porto Bank -->
         <div class="slide slide-porto">
             <div class="porto-container">
-                <div class="porto-logo">🏦</div>
-                <div class="porto-title">PORTO BANK</div>
+                <img src="logo-portobank.jpg" alt="Porto Bank" style="width: 400px; height: auto; object-fit: contain; filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));">
                 <div class="porto-subtitle">Seguro Fiança Locatícia</div>
                 <div class="porto-text">
                     Proteção garantida para seus inquilinos<br>
@@ -264,17 +273,24 @@
         }
 
         function generateQRCode() {
-            const url = window.location.href.split('projetor')[0]; // URL da página principal
-            const qr = document.getElementById('qrCode');
-            qr.innerHTML = '';
-            new QRCode(qr, {
-                text: url,
-                width: 300,
-                height: 300,
-                colorDark: '#0052A3',
-                colorLight: '#FFFFFF',
-                correctLevel: QRCode.CorrectLevel.H
-            });
+            setTimeout(() => {
+                const url = window.location.href.split('projetor')[0]; // URL da página principal
+                const qr = document.getElementById('qrCode');
+                qr.innerHTML = '';
+                try {
+                    new QRCode(qr, {
+                        text: url,
+                        width: 300,
+                        height: 300,
+                        colorDark: '#0052A3',
+                        colorLight: '#FFFFFF',
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                } catch(e) {
+                    console.error('Erro ao gerar QR Code:', e);
+                    qr.innerHTML = '<div style="color: red; font-weight: bold;">Erro ao gerar QR Code</div>';
+                }
+            }, 100);
         }
 
         // Inicializar
