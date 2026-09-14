@@ -165,12 +165,12 @@
 
                 console.log('Total de registros:', count);
 
-                // Apagar todos
-                console.log('Iniciando delete...');
+                // Apagar todos (sem filtro, todos os registros)
+                console.log('Iniciando delete sem filtro...');
                 const { error } = await supabase
                     .from('participantes')
                     .delete()
-                    .gt('id', 0);
+                    .not('id', 'is', null);
 
                 console.log('Delete erro:', error);
 
