@@ -37,16 +37,18 @@
             justify-content: center;
             opacity: 0;
             transition: opacity 1s ease-in-out;
-            animation: fadeInOut 16s infinite;
+            animation: fadeInOut 75s infinite;
         }
 
         .slide:nth-child(1) { animation-delay: 0s; }
-        .slide:nth-child(2) { animation-delay: 5.33s; }
-        .slide:nth-child(3) { animation-delay: 10.66s; }
+        .slide:nth-child(2) { animation-delay: 25s; }
+        .slide:nth-child(3) { animation-delay: 50s; }
 
         @keyframes fadeInOut {
             0%, 100% { opacity: 0; }
-            16.67%, 83.33% { opacity: 1; }
+            5.33%, 30.67% { opacity: 1; }
+            33.33%, 58.67% { opacity: 0; }
+            61.33%, 86.67% { opacity: 1; }
         }
 
         /* Slide QR Code */
@@ -269,15 +271,21 @@
                 currentSlide = (currentSlide + 1) % 3;
                 updateSlides();
                 resetTimer();
-            }, 16000); // 16 segundos por slide
+            }, 25000); // 25 segundos por slide
         }
 
         function generateQRCode() {
             setTimeout(() => {
-                const url = window.location.href.split('projetor')[0]; // URL da página principal
-                const qr = document.getElementById('qrCode');
-                qr.innerHTML = '';
                 try {
+                    const url = window.location.href.split('projetor')[0]; // URL da página principal
+                    const qr = document.getElementById('qrCode');
+
+                    // Limpar elemento
+                    while (qr.firstChild) {
+                        qr.removeChild(qr.firstChild);
+                    }
+
+                    // Gerar novo QR Code
                     new QRCode(qr, {
                         text: url,
                         width: 300,
@@ -286,11 +294,12 @@
                         colorLight: '#FFFFFF',
                         correctLevel: QRCode.CorrectLevel.H
                     });
+
+                    console.log('QR Code gerado:', url);
                 } catch(e) {
                     console.error('Erro ao gerar QR Code:', e);
-                    qr.innerHTML = '<div style="color: red; font-weight: bold;">Erro ao gerar QR Code</div>';
                 }
-            }, 100);
+            }, 200);
         }
 
         // Inicializar
