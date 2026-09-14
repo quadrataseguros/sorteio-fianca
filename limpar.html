@@ -122,8 +122,17 @@
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function limparDados() {
-            if (!confirm('⚠️ Tem certeza que quer apagar TODOS os dados?')) return;
-            if (!confirm('⚠️ CONFIRMAÇÃO FINAL: Vai apagar tudo mesmo?')) return;
+            console.log('Iniciando limpeza...');
+
+            if (!confirm('⚠️ Tem certeza que quer apagar TODOS os dados?')) {
+                console.log('Cancelado na primeira confirmação');
+                return;
+            }
+
+            if (!confirm('⚠️ CONFIRMAÇÃO FINAL: Vai apagar tudo mesmo?')) {
+                console.log('Cancelado na segunda confirmação');
+                return;
+            }
 
             document.getElementById('loading').classList.add('show');
             const statusEl = document.getElementById('status');
@@ -131,26 +140,44 @@
             statusEl.textContent = '';
 
             try {
-                const { error } = await supabase
+                console.log('Conectando ao Supabase...');
+
+                const btn = event.target;
+                btn.disabled = true;
+                btn.textContent = 'Apagando...';
+
+                console.log('Iniciando delete...');
+                const { data, error } = await supabase
                     .from('participantes')
                     .delete()
                     .neq('id', 0);
 
-                if (error) throw error;
+                console.log('Resposta:', { data, error });
+
+                if (error) {
+                    throw new Error(error.message || 'Erro ao apagar');
+                }
 
                 statusEl.className = 'status success';
                 statusEl.textContent = '✅ Todos os dados foram apagados com sucesso!';
                 document.getElementById('loading').classList.remove('show');
+                btn.textContent = 'Limpar Tudo';
 
+                console.log('Limpeza concluída! Redirecionando...');
                 setTimeout(() => {
                     voltarAoSorteio();
                 }, 2000);
 
             } catch(err) {
-                console.error('Erro:', err);
-                statusEl.className = 'status error';
-                statusEl.textContent = '❌ Erro ao apagar dados: ' + (err.message || 'Erro desconhecido');
+                console.error('❌ Erro completo:', err);
                 document.getElementById('loading').classList.remove('show');
+
+                statusEl.className = 'status error';
+                statusEl.textContent = '❌ Erro: ' + (err.message || 'Erro desconhecido ao apagar dados');
+
+                const btn = event.target;
+                btn.disabled = false;
+                btn.textContent = 'Limpar Tudo';
             }
         }
 
