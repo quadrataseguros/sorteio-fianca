@@ -6,6 +6,7 @@
     <title>Sorteio Seguro Fiança Porto</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Inter:wght@400;500;600&display=swap">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --primary: #0052A3; --primary-light: #E6F0FF; --success: #22C55E; --text-dark: #1F2937; --text-light: #6B7280; --border: #E5E7EB; --bg-white: #FFFFFF; --bg-gray: #F9FAFB; }
@@ -61,6 +62,8 @@
         .winner-card { background: #E6F9E6; border: 2px solid #22C55E; padding: 20px; margin: 16px 0; border-radius: 8px; }
         .winner-position { color: #22C55E; font-weight: bold; margin-bottom: 8px; font-size: 12px; }
         .winner-name { font-size: 24px; font-weight: bold; margin-bottom: 8px; }
+        
+        .loading { text-align: center; color: var(--text-light); }
     </style>
 </head>
 <body>
@@ -133,7 +136,7 @@
                     <div>Participantes Registrados</div>
                 </div>
                 <div class="participants-list" id="listaParticipantes">
-                    <div class="empty-state">Nenhum participante ainda.</div>
+                    <div class="loading">Carregando...</div>
                 </div>
                 <br>
                 <button class="btn btn-secondary" onclick="limparTodos()">🗑️ Limpar Todos (Reiniciar)</button>
@@ -172,9 +175,13 @@
 
     <script>
         const SENHA_ADMIN = "2734";
+        const SUPABASE_URL = "https://tqenmuittslwlaeurqgt.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_IqFn5uOBeHm8bEDHwK3HUg_44xA_Pyl";
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let isAdmin = false;
 
-        function salvarParticipante(e) {
+        async function salvarParticipante(e) {
             e.preventDefault();
             try {
                 const nome = document.getElementById('nome').value.trim();
@@ -182,18 +189,11 @@
                 const telefone = document.getElementById('telefone').value.trim();
                 const empresa = document.getElementById('empresa').value.trim();
 
-                const participante = {nome, email, telefone, empresa, data: new Date().toLocaleString()};
-                
-                let participantes = [];
-                try {
-                    const dados = localStorage.getItem('participantes');
-                    participantes = dados ? JSON.parse(dados) : [];
-                } catch(err) {
-                    participantes = [];
-                }
+                const { data, error } = await supabase
+                    .from('participantes')
+                    .insert([{ nome, email, telefone, empresa }]);
 
-                participantes.push(participante);
-                localStorage.setItem('participantes', JSON.stringify(participantes));
+                if (error) throw error;
 
                 mostrarMensagem('✅ Você está no sorteio! Boa sorte!', 'success');
                 document.querySelector('form').reset();
@@ -204,17 +204,22 @@
             }
         }
 
-        function atualizarMeuRegistro() {
+        async function atualizarMeuRegistro() {
             try {
-                const dados = localStorage.getItem('participantes');
-                const participantes = dados ? JSON.parse(dados) : [];
-                
-                if (participantes.length === 0) {
+                const { data, error } = await supabase
+                    .from('participantes')
+                    .select('*')
+                    .order('id', { ascending: false })
+                    .limit(1);
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
                     document.getElementById('meuRegistro').innerHTML = '<div class="empty-state"><p>Preencha o formulário para participar!</p></div>';
                     return;
                 }
 
-                const ultimo = participantes[participantes.length - 1];
+                const ultimo = data[0];
                 document.getElementById('meuRegistro').innerHTML = `
                     <div style="background: #E6F0FF; padding: 20px; border-radius: 8px; text-align: left;">
                         <strong>${ultimo.nome}</strong><br>
@@ -238,20 +243,25 @@
             if (nome === 'qrcode' && !document.querySelector('#qrCode canvas')) gerarQRCode();
         }
 
-        function atualizarListaAdmin() {
+        async function atualizarListaAdmin() {
             try {
-                const dados = localStorage.getItem('participantes');
-                const participantes = dados ? JSON.parse(dados) : [];
-                document.getElementById('totalParticipantes').textContent = participantes.length;
+                const { data, error } = await supabase
+                    .from('participantes')
+                    .select('*')
+                    .order('id', { ascending: false });
+
+                if (error) throw error;
+
+                document.getElementById('totalParticipantes').textContent = data ? data.length : 0;
                 
-                if (participantes.length === 0) {
+                if (!data || data.length === 0) {
                     document.getElementById('listaParticipantes').innerHTML = '<div class="empty-state">Nenhum participante ainda.</div>';
                     return;
                 }
 
-                const html = participantes.map((p, i) => `
+                const html = data.map((p, i) => `
                     <div class="participant-item">
-                        <strong>${i+1}. ${p.nome}</strong><br>
+                        <strong>${data.length - i}. ${p.nome}</strong><br>
                         📧 ${p.email}<br>
                         📱 ${p.telefone}
                         ${p.empresa ? '<br>🏢 ' + p.empresa : ''}
@@ -260,20 +270,24 @@
                 document.getElementById('listaParticipantes').innerHTML = html;
             } catch(err) {
                 console.error('Erro:', err);
+                document.getElementById('listaParticipantes').innerHTML = '<div class="empty-state">Erro ao carregar dados</div>';
             }
         }
 
-        function realizarSorteio() {
+        async function realizarSorteio() {
             try {
-                const dados = localStorage.getItem('participantes');
-                const participantes = dados ? JSON.parse(dados) : [];
+                const { data, error } = await supabase
+                    .from('participantes')
+                    .select('*');
 
-                if (participantes.length < 5) {
-                    alert('Precisa de pelo menos 5 participantes! Agora temos: ' + participantes.length);
+                if (error) throw error;
+
+                if (!data || data.length < 5) {
+                    alert('Precisa de pelo menos 5 participantes! Agora temos: ' + (data ? data.length : 0));
                     return;
                 }
 
-                const shuffled = [...participantes].sort(() => Math.random() - 0.5);
+                const shuffled = [...data].sort(() => Math.random() - 0.5);
                 const ganhadores = shuffled.slice(0, 5);
 
                 localStorage.setItem('ganhadores', JSON.stringify(ganhadores));
@@ -400,13 +414,24 @@
             }
         }
 
-        function limparTodos() {
-            if (confirm('⚠️ ATENÇÃO! Isso vai APAGAR TODOS os participantes e ganhadores. Tem certeza?')) {
+        async function limparTodos() {
+            if (confirm('⚠️ ATENÇÃO! Isso vai APAGAR TODOS os participantes. Tem certeza?')) {
                 if (confirm('CONFIRMAÇÃO FINAL: Vai apagar tudo mesmo?')) {
-                    localStorage.removeItem('participantes');
-                    localStorage.removeItem('ganhadores');
-                    atualizarListaAdmin();
-                    alert('✅ Dados apagados!');
+                    try {
+                        const { error } = await supabase
+                            .from('participantes')
+                            .delete()
+                            .neq('id', 0);
+
+                        if (error) throw error;
+                        
+                        localStorage.removeItem('ganhadores');
+                        atualizarListaAdmin();
+                        alert('✅ Dados apagados!');
+                    } catch(err) {
+                        console.error('Erro ao limpar:', err);
+                        alert('❌ Erro ao limpar dados!');
+                    }
                 }
             }
         }
