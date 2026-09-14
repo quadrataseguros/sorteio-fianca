@@ -14,7 +14,7 @@
         .container { max-width: 900px; margin: 0 auto; }
         
         header { display: flex; align-items: center; gap: 20px; margin-bottom: 40px; }
-        .logo { width: 70px; height: 70px; flex-shrink: 0; }
+        .logo { width: 80px; height: 80px; flex-shrink: 0; }
         .logo svg { width: 100%; height: 100%; }
         header .titulo { flex: 1; }
         header h1 { color: var(--primary); font-size: 28px; margin-bottom: 4px; }
@@ -70,18 +70,15 @@
     <div class="container">
         <header>
             <div class="logo">
-                <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Fundo arredondado azul -->
-                    <rect width="120" height="100" rx="20" fill="#0052A3"/>
+                <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Bolha arredondada azul -->
+                    <path d="M 20 0 Q 0 0 0 20 L 0 60 Q 0 80 20 80 L 35 80 L 50 100 L 45 80 L 60 80 Q 80 80 80 60 L 80 20 Q 80 0 60 0 L 20 0 Z" fill="#1E88E5"/>
                     
-                    <!-- Letra Q grande -->
-                    <text x="60" y="75" font-family="Arial, sans-serif" font-size="70" font-weight="bold" fill="white" text-anchor="middle">Q</text>
+                    <!-- Círculo branco externo do Q -->
+                    <circle cx="50" cy="45" r="28" fill="white"/>
                     
-                    <!-- Texto QUADRATA -->
-                    <text x="60" y="125" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#0052A3" text-anchor="middle">QUADRATA</text>
-                    
-                    <!-- Texto SEGUROS -->
-                    <text x="60" y="138" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#0052A3" text-anchor="middle">SEGUROS</text>
+                    <!-- Q azul escuro interno -->
+                    <text x="50" y="58" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#001D3D" text-anchor="middle">Q</text>
                 </svg>
             </div>
             <div class="titulo">
