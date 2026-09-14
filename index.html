@@ -137,8 +137,12 @@
             </div>
 
             <div id="sorteio" class="tab-content">
-                <p style="margin-bottom: 20px;">Clique para sortear 5 ganhadores dentre todos os participantes:</p>
-                <button class="btn btn-primary" onclick="realizarSorteio()" style="font-size: 18px; padding: 20px;">🎲 SORTEAR AGORA</button>
+                <div id="sorteioInfo" style="background: #E6F0FF; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+                    <div style="font-size: 28px; font-weight: bold; color: #0052A3; margin-bottom: 10px;" id="sorteioContador">Sorteio 1 de 3</div>
+                    <p style="color: #1F2937;">Clique para sortear um ganhador!</p>
+                </div>
+                <button class="btn btn-primary" onclick="realizarSorteio()" style="font-size: 18px; padding: 20px; margin-bottom: 12px;" id="btnSortear">🎲 SORTEAR GANHADOR</button>
+                <button class="btn btn-secondary" onclick="resetarSorteios()" style="display: none;" id="btnResetar">🔄 Resetar Sorteios</button>
             </div>
 
             <div id="ganhadores" class="tab-content">
@@ -287,15 +291,34 @@
 
                 if (error) throw error;
 
-                if (!data || data.length < 5) {
-                    alert('Precisa de pelo menos 5 participantes! Agora temos: ' + (data ? data.length : 0));
+                if (!data || data.length < 3) {
+                    alert('Precisa de pelo menos 3 participantes! Agora temos: ' + (data ? data.length : 0));
                     return;
                 }
 
-                const shuffled = [...data].sort(() => Math.random() - 0.5);
-                const ganhadores = shuffled.slice(0, 5);
+                let ganhadores = JSON.parse(localStorage.getItem('ganhadores') || '[]');
+                const idsJaSorteados = ganhadores.map(g => g.id);
+                const participantesDisponiveis = data.filter(p => !idsJaSorteados.includes(p.id));
+
+                if (participantesDisponiveis.length === 0) {
+                    alert('Não há mais participantes disponíveis!');
+                    return;
+                }
+
+                const shuffled = [...participantesDisponiveis].sort(() => Math.random() - 0.5);
+                const vencedor = shuffled[0];
+                ganhadores.push(vencedor);
 
                 localStorage.setItem('ganhadores', JSON.stringify(ganhadores));
+
+                if (ganhadores.length < 3) {
+                    document.getElementById('sorteioContador').textContent = `Sorteio ${ganhadores.length + 1} de 3`;
+                    document.getElementById('btnResetar').style.display = 'block';
+                } else {
+                    document.getElementById('btnSortear').disabled = true;
+                    document.getElementById('btnResetar').style.display = 'block';
+                }
+
                 mostrarGanhadores(ganhadores);
                 confetti();
             } catch(err) {
@@ -305,7 +328,7 @@
         }
 
         function mostrarGanhadores(ganhadores) {
-            const posicoes = ['🥇 1º LUGAR', '🥈 2º LUGAR', '🥉 3º LUGAR', '4º LUGAR', '5º LUGAR'];
+            const posicoes = ['🥇 1º GANHADOR', '🥈 2º GANHADOR', '🥉 3º GANHADOR'];
             const html = ganhadores.map((g, i) => `
                 <div class="winner-card">
                     <div class="winner-position">${posicoes[i]}</div>
@@ -315,14 +338,31 @@
                 </div>
             `).join('');
 
-            document.getElementById('winnersDisplay').innerHTML = html + '<br><button class="btn btn-secondary" onclick="novoSorteio()">🔄 Novo Sorteio</button>';
+            let botoes = '';
+            if (ganhadores.length < 3) {
+                botoes = '<br><button class="btn btn-primary" onclick="voltarAoSorteio()" style="margin-bottom: 12px;">🎲 Próximo Sorteio</button>';
+            } else {
+                botoes = '<br><div style="background: #E6F9E6; padding: 16px; border-radius: 8px; text-align: center; margin-bottom: 12px;"><strong style="color: #22C55E;">✅ Sorteios Concluídos!</strong></div>';
+            }
+            botoes += '<button class="btn btn-secondary" onclick="resetarSorteios()">🔄 Resetar e Começar Novamente</button>';
+
+            document.getElementById('winnersDisplay').innerHTML = html + botoes;
             document.querySelectorAll('#adminMode .tab-btn')[2].click();
         }
 
-        function novoSorteio() {
-            localStorage.removeItem('ganhadores');
-            document.getElementById('winnersDisplay').innerHTML = '<div class="empty-state"><p>Sorteio ainda não realizado.</p></div>';
+        function voltarAoSorteio() {
             document.querySelectorAll('#adminMode .tab-btn')[1].click();
+        }
+
+        function resetarSorteios() {
+            if (confirm('⚠️ Tem certeza que quer resetar todos os sorteios?')) {
+                localStorage.removeItem('ganhadores');
+                document.getElementById('sorteioContador').textContent = 'Sorteio 1 de 3';
+                document.getElementById('btnSortear').disabled = false;
+                document.getElementById('btnResetar').style.display = 'none';
+                document.getElementById('winnersDisplay').innerHTML = '<div class="empty-state"><p>Sorteio ainda não realizado.</p></div>';
+                document.querySelectorAll('#adminMode .tab-btn')[1].click();
+            }
         }
 
         function gerarQRCode() {
