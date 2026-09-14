@@ -106,12 +106,6 @@
                     <button type="submit" class="btn btn-primary">✅ Participar do Sorteio</button>
                 </form>
                 
-                <hr style="margin: 30px 0; border: none; border-top: 1px solid var(--border);">
-                
-                <h3 style="margin-bottom: 16px;">Seu Registro</h3>
-                <div id="meuRegistro" class="empty-state">
-                    <p>Preencha o formulário acima para participar!</p>
-                </div>
             </div>
         </div>
 
@@ -203,7 +197,6 @@
 
                 mostrarMensagem('✅ Você está no sorteio! Boa sorte!', 'success');
                 document.querySelector('form').reset();
-                atualizarMeuRegistro();
             } catch(err) {
                 console.error('Erro:', err);
                 mostrarMensagem('❌ Erro ao participar!', 'error');
@@ -485,7 +478,6 @@
         if (window.location.search.includes('admin')) {
             abrirLoginModal();
         }
-        atualizarMeuRegistro();
     </script>
 </body>
 </html>
