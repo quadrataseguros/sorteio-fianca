@@ -157,20 +157,41 @@
                     throw new Error('Supabase não inicializou. Recarregue a página.');
                 }
 
+                // Primeiro, contar quantos registros tem
+                console.log('Contando registros...');
+                const { count, error: countError } = await supabase
+                    .from('participantes')
+                    .select('*', { count: 'exact', head: true });
+
+                console.log('Total de registros:', count);
+
+                // Apagar todos
                 console.log('Iniciando delete...');
-                const { data, error } = await supabase
+                const { error } = await supabase
                     .from('participantes')
                     .delete()
-                    .neq('id', 0);
+                    .gt('id', 0);
 
-                console.log('Resposta:', { data, error });
+                console.log('Delete erro:', error);
 
                 if (error) {
-                    throw new Error(error.message || 'Erro ao apagar');
+                    throw new Error(error.message || 'Erro ao apagar: ' + JSON.stringify(error));
+                }
+
+                // Verificar se foi apagado
+                console.log('Verificando se foi apagado...');
+                const { count: countAfter, error: countErrorAfter } = await supabase
+                    .from('participantes')
+                    .select('*', { count: 'exact', head: true });
+
+                console.log('Registros após delete:', countAfter);
+
+                if (countAfter && countAfter > 0) {
+                    throw new Error('Falha ao apagar: ainda existem ' + countAfter + ' registros');
                 }
 
                 statusEl.className = 'status success';
-                statusEl.textContent = '✅ Todos os dados foram apagados com sucesso!';
+                statusEl.textContent = '✅ Todos os ' + count + ' dados foram apagados com sucesso!';
                 document.getElementById('loading').classList.remove('show');
                 btn.textContent = 'Limpar Tudo';
 
