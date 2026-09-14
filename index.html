@@ -70,15 +70,30 @@
     <div class="container">
         <header>
             <div class="logo">
-                <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Bolha arredondada azul -->
-                    <path d="M 20 0 Q 0 0 0 20 L 0 60 Q 0 80 20 80 L 35 80 L 50 100 L 45 80 L 60 80 Q 80 80 80 60 L 80 20 Q 80 0 60 0 L 20 0 Z" fill="#1E88E5"/>
-                    
-                    <!-- Círculo branco externo do Q -->
-                    <circle cx="50" cy="45" r="28" fill="white"/>
-                    
-                    <!-- Q azul escuro interno -->
-                    <text x="50" y="58" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#001D3D" text-anchor="middle">Q</text>
+                <svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Speech bubble azul com ponta -->
+                    <defs>
+                        <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.1"/>
+                        </filter>
+                    </defs>
+
+                    <!-- Bolha arredondada -->
+                    <path d="M 15 10
+                             L 85 10
+                             Q 95 10 95 20
+                             L 95 65
+                             Q 95 75 85 75
+                             L 35 75
+                             L 20 95
+                             L 30 75
+                             L 15 75
+                             Q 5 75 5 65
+                             L 5 20
+                             Q 5 10 15 10 Z" fill="#0052A3" filter="url(#shadow)"/>
+
+                    <!-- Q branco grande -->
+                    <text x="50" y="58" font-family="Arial, sans-serif" font-size="56" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">Q</text>
                 </svg>
             </div>
             <div class="titulo">
